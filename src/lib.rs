@@ -29,3 +29,8 @@ impl fmt::Display for ParseError {
 }
 
 impl std::error::Error for ParseError {}
+
+// TODO iteratorを取ったほうが汎用的なり
+pub struct JsonParser {
+    chars: Vec<char>,
+}
