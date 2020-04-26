@@ -12,3 +12,18 @@ pub enum JsonValue {
     Object(JsonObject),
     Null,
 }
+
+// TODO parser部分は後で別モジュールに書く
+//
+use std::fmt;
+
+#[derive(Debug)]
+pub struct ParseError {}
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "")
+    }
+}
+
+impl std::error::Error for ParseError {}
