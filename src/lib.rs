@@ -17,6 +17,8 @@ pub enum JsonValue {
 //
 use std::fmt;
 
+pub type ParseResult = Result<JsonValue, ParseError>;
+
 #[derive(Debug)]
 pub struct ParseError {}
 
