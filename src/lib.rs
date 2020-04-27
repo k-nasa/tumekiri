@@ -116,7 +116,45 @@ where
     }
 
     pub fn parse_array(&mut self) -> ParseResult {
-        todo!()
+        if self.chars.next() != Some('[') {
+            return self.error_result("unexpected charactor");
+        }
+
+        let mut array = Vec::new();
+
+        loop {
+            let c = match self.peek() {
+                None => break,
+                Some(c) => c,
+            };
+
+            if c == ']' {
+                self.next();
+                break;
+            }
+
+            match self.parse() {
+                Err(e) => return self.error_result(&e.to_string()),
+                Ok(v) => array.push(v),
+            }
+
+            let c = match self.peek() {
+                None => break,
+                Some(c) => c,
+            };
+
+            if c == ']' {
+                continue;
+            }
+
+            if c == ',' {
+                self.next();
+            } else {
+                return self.error_result(&format!(", is expected, but got {}", c));
+            }
+        }
+
+        Ok(JsonValue::Array(array))
     }
 
     pub fn parse_object(&mut self) -> ParseResult {
