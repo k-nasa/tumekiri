@@ -34,3 +34,38 @@ fn parse_number_test() {
         assert_eq!(value, JsonValue::Number(out));
     }
 }
+
+#[test]
+fn parse_array_test() {
+    let in_out = vec![
+        (
+            "[1,2,3  ,4,   5]",
+            JsonValue::Array(vec![
+                JsonValue::Number(1.0),
+                JsonValue::Number(2.0),
+                JsonValue::Number(3.0),
+                JsonValue::Number(4.0),
+                JsonValue::Number(5.0),
+            ]),
+        ),
+        (
+            r#"[1,2,3, [], [1, "string"]]"#,
+            JsonValue::Array(vec![
+                JsonValue::Number(1.0),
+                JsonValue::Number(2.0),
+                JsonValue::Number(3.0),
+                JsonValue::Array(vec![]),
+                JsonValue::Array(vec![
+                    JsonValue::Number(1.0),
+                    JsonValue::String("string".to_string()),
+                ]),
+            ]),
+        ),
+    ];
+
+    for (input, out) in in_out {
+        let value = JsonParser::new(input.chars()).parse().unwrap();
+
+        assert_eq!(value, out);
+    }
+}
