@@ -69,3 +69,43 @@ fn parse_array_test() {
         assert_eq!(value, out);
     }
 }
+
+#[test]
+fn parse_object_test() {
+    let input = r#"
+{
+  "squadName": "Super hero squad",
+  "homeTown": "Metro City",
+  "formed": 2016,
+  "secretBase": "Super tower"
+  }
+        "#;
+
+    let parse_result = JsonParser::new(input.chars()).parse();
+
+    assert!(parse_result.is_ok());
+
+    let _value = parse_result.unwrap();
+
+    // FIXME テスト書くのすごくめんどくさい。。。。プギャーーー
+    // assert_eq!(value, JsonValue::Object());
+}
+
+#[test]
+fn parse_bool_and_null_test() {
+    let in_out = vec![
+        ("true", JsonValue::Bool(true)),
+        ("false", JsonValue::Bool(false)),
+        ("null", JsonValue::Null),
+    ];
+
+    for (input, out) in in_out {
+        let parse_result = JsonParser::new(input.chars()).parse();
+
+        assert!(parse_result.is_ok());
+
+        let value = parse_result.unwrap();
+
+        assert_eq!(value, out);
+    }
+}
