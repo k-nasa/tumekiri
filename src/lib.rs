@@ -42,6 +42,14 @@ impl<C> JsonParser<C>
 where
     C: Iterator<Item = char>,
 {
+    pub fn new(input: C) -> Self {
+        JsonParser {
+            chars: input.peekable(),
+            col: 0,
+            line: 0,
+        }
+    }
+
     pub fn parse(&mut self) -> ParseResult {
         let first_char = match self.peek() {
             None => return self.error_result("Invalid input"),
@@ -60,7 +68,24 @@ where
     }
 
     pub fn parse_string(&mut self) -> ParseResult {
-        todo!()
+        if self.chars.next() != Some('"') {
+            return self.error_result("");
+        }
+
+        let mut output = String::new();
+
+        loop {
+            let c = match self.chars.next() {
+                Some('"') => break,
+                None => return self.error_result(""),
+
+                Some(c) => c,
+            };
+
+            output.push(c)
+        }
+
+        Ok(JsonValue::String(output))
     }
 
     pub fn parse_number(&mut self) -> ParseResult {
