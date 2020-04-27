@@ -58,7 +58,7 @@ where
 
         match first_char {
             '"' => self.parse_string(),
-            '0'..='9' => self.parse_number(),
+            '0'..='9' | '-' => self.parse_number(),
             '{' => self.parse_object(),
             '[' => self.parse_array(),
             't' | 'f' => self.parse_bool(),
@@ -89,7 +89,30 @@ where
     }
 
     pub fn parse_number(&mut self) -> ParseResult {
-        todo!()
+        let mut float_number_string = String::new();
+
+        loop {
+            let digit = match self.chars.peek() {
+                None => break,
+                Some(&d) => d,
+            };
+
+            match digit {
+                '-' | '0'..='9' | '.' | 'e' => float_number_string.push(digit),
+                _ => break,
+            }
+
+            self.chars.next();
+        }
+
+        let f: f64 = match float_number_string.parse() {
+            Err(_) => {
+                return self.error_result(&format!("{} is invalid number", float_number_string))
+            }
+            Ok(f) => f,
+        };
+
+        Ok(JsonValue::Number(f))
     }
 
     pub fn parse_array(&mut self) -> ParseResult {
