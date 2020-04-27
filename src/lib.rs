@@ -49,34 +49,37 @@ where
         };
 
         match first_char {
-            't' | 'f' => self.parse_bool(),
             '"' => self.parse_string(),
-            '[' => self.parse_array(),
-            '{' => self.parse_object(),
-            'n' => self.parse_null(),
             '0'..='9' => self.parse_number(),
+            '{' => self.parse_object(),
+            '[' => self.parse_array(),
+            't' | 'f' => self.parse_bool(),
+            'n' => self.parse_null(),
             c => self.error_result(&format!("Unsupported charactor {}", c)),
         }
+    }
+
+    pub fn parse_string(&mut self) -> ParseResult {
+        todo!()
+    }
+
+    pub fn parse_number(&mut self) -> ParseResult {
+        todo!()
+    }
+
+    pub fn parse_array(&mut self) -> ParseResult {
+        todo!()
+    }
+
+    pub fn parse_object(&mut self) -> ParseResult {
+        todo!()
     }
 
     pub fn parse_bool(&mut self) -> ParseResult {
         todo!()
     }
-    pub fn parse_string(&mut self) -> ParseResult {
-        todo!()
-    }
-    pub fn parse_array(&mut self) -> ParseResult {
-        todo!()
-    }
-    pub fn parse_object(&mut self) -> ParseResult {
-        todo!()
-    }
 
     pub fn parse_null(&mut self) -> ParseResult {
-        todo!()
-    }
-
-    pub fn parse_number(&mut self) -> ParseResult {
         todo!()
     }
 
