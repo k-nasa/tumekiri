@@ -14,7 +14,6 @@ pub enum JsonValue {
 }
 
 // TODO parser部分は後で別モジュールに書く
-//
 use std::fmt;
 use std::iter::Peekable;
 
@@ -43,6 +42,44 @@ impl<C> JsonParser<C>
 where
     C: Iterator<Item = char>,
 {
+    pub fn parse(&mut self) -> ParseResult {
+        let first_char = match self.peek() {
+            None => return self.error_result("Invalid input"),
+            Some(c) => c,
+        };
+
+        match first_char {
+            't' | 'f' => self.parse_bool(),
+            '"' => self.parse_string(),
+            '[' => self.parse_array(),
+            '{' => self.parse_object(),
+            'n' => self.parse_null(),
+            '0'..='9' => self.parse_number(),
+            c => self.error_result(&format!("Unsupported charactor {}", c)),
+        }
+    }
+
+    pub fn parse_bool(&mut self) -> ParseResult {
+        todo!()
+    }
+    pub fn parse_string(&mut self) -> ParseResult {
+        todo!()
+    }
+    pub fn parse_array(&mut self) -> ParseResult {
+        todo!()
+    }
+    pub fn parse_object(&mut self) -> ParseResult {
+        todo!()
+    }
+
+    pub fn parse_null(&mut self) -> ParseResult {
+        todo!()
+    }
+
+    pub fn parse_number(&mut self) -> ParseResult {
+        todo!()
+    }
+
     // NOTE Iterator traitとしても良いかもしれない
     fn netx(&mut self) -> Option<char> {
         while let Some(c) = self.chars.next() {
