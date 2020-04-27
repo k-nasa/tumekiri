@@ -180,6 +180,7 @@ where
             if !c.is_whitespace() {
                 return Some(c);
             }
+            self.chars.next();
         }
 
         None
