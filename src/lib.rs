@@ -21,11 +21,13 @@ use std::iter::Peekable;
 pub type ParseResult = Result<JsonValue, ParseError>;
 
 #[derive(Debug)]
-pub struct ParseError {}
+pub struct ParseError {
+    msg: String,
+}
 
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "")
+        write!(f, "{}", self.msg)
     }
 }
 
@@ -73,5 +75,15 @@ where
         }
 
         None
+    }
+
+    fn error_result(&self, msg: &str) -> ParseResult {
+        Err(self.make_error(msg))
+    }
+
+    fn make_error(&self, msg: &str) -> ParseError {
+        ParseError {
+            msg: String::from(msg),
+        }
     }
 }
