@@ -30,7 +30,31 @@ impl fmt::Display for ParseError {
 
 impl std::error::Error for ParseError {}
 
-// TODO iteratorを取ったほうが汎用的なり
-pub struct JsonParser {
-    chars: Vec<char>,
+pub struct JsonParser<C: Iterator<Item = char>> {
+    chars: C,
+    col: usize,
+    line: usize,
+}
+
+impl<C> JsonParser<C>
+where
+    C: Iterator<Item = char>,
+{
+    // NOTE Iterator traitとしても良いかもしれない
+    fn netx(&mut self) -> Option<char> {
+        while let Some(c) = self.chars.next() {
+            // skip beakline
+            if c == '\n' {
+                self.col = 0;
+                self.line += 1;
+            }
+
+            self.col += 1;
+            if !c.is_whitespace() {
+                return Some(c);
+            }
+        }
+
+        None
+    }
 }
