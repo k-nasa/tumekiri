@@ -16,6 +16,7 @@ pub enum JsonValue {
 // TODO parser部分は後で別モジュールに書く
 //
 use std::fmt;
+use std::iter::Peekable;
 
 pub type ParseResult = Result<JsonValue, ParseError>;
 
@@ -31,7 +32,7 @@ impl fmt::Display for ParseError {
 impl std::error::Error for ParseError {}
 
 pub struct JsonParser<C: Iterator<Item = char>> {
-    chars: C,
+    chars: Peekable<C>,
     col: usize,
     line: usize,
 }
@@ -44,6 +45,22 @@ where
     fn netx(&mut self) -> Option<char> {
         while let Some(c) = self.chars.next() {
             // skip beakline
+            if c == '\n' {
+                self.col = 0;
+                self.line += 1;
+            }
+
+            self.col += 1;
+            if !c.is_whitespace() {
+                return Some(c);
+            }
+        }
+
+        None
+    }
+
+    fn peek(&mut self) -> Option<char> {
+        while let Some(&c) = self.chars.peek() {
             if c == '\n' {
                 self.col = 0;
                 self.line += 1;
