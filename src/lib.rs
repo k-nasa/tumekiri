@@ -108,24 +108,6 @@ where
         todo!()
     }
 
-    // NOTE Iterator traitとしても良いかもしれない
-    fn netx(&mut self) -> Option<char> {
-        while let Some(c) = self.chars.next() {
-            // skip beakline
-            if c == '\n' {
-                self.col = 0;
-                self.line += 1;
-            }
-
-            self.col += 1;
-            if !c.is_whitespace() {
-                return Some(c);
-            }
-        }
-
-        None
-    }
-
     fn peek(&mut self) -> Option<char> {
         while let Some(&c) = self.chars.peek() {
             if c == '\n' {
@@ -150,5 +132,29 @@ where
         ParseError {
             msg: String::from(msg),
         }
+    }
+}
+
+impl<C> std::iter::Iterator for JsonParser<C>
+where
+    C: Iterator<Item = char>,
+{
+    type Item = char;
+
+    fn next(&mut self) -> Option<<Self as std::iter::Iterator>::Item> {
+        while let Some(c) = self.chars.next() {
+            // skip beakline
+            if c == '\n' {
+                self.col = 0;
+                self.line += 1;
+            }
+
+            self.col += 1;
+            if !c.is_whitespace() {
+                return Some(c);
+            }
+        }
+
+        None
     }
 }
