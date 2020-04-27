@@ -61,8 +61,7 @@ where
             '0'..='9' | '-' => self.parse_number(),
             '{' => self.parse_object(),
             '[' => self.parse_array(),
-            't' | 'f' => self.parse_bool(),
-            'n' => self.parse_null(),
+            't' | 'f' | 'n' => self.parse_bool_and_null(),
             c => self.error_result(&format!("Unsupported charactor {}", c)),
         }
     }
@@ -158,15 +157,97 @@ where
     }
 
     pub fn parse_object(&mut self) -> ParseResult {
-        todo!()
+        if self.chars.next() != Some('{') {
+            return self.error_result("unexpected charactor");
+        }
+
+        let mut object = HashMap::new();
+
+        loop {
+            let c = match self.peek() {
+                None => break,
+                Some(c) => c,
+            };
+
+            if c == '}' {
+                self.next();
+                break;
+            }
+
+            let key_string = match self.parse() {
+                Ok(JsonValue::String(key)) => key,
+                Ok(v) => {
+                    return self.error_result(&format!("expected string value, but got {:?}", v))
+                }
+                e @ Err(_) => return e,
+            };
+
+            let c = match self.next() {
+                None => break,
+                Some(c) => c,
+            };
+
+            if c != ':' {
+                return self.error_result(&format!("unexpected charactor {}", c));
+            }
+
+            match self.parse() {
+                e @ Err(_) => return e,
+                Ok(value) => {
+                    object.insert(key_string, value);
+                }
+            }
+
+            match self.peek() {
+                Some(',') => {
+                    self.next();
+                }
+                Some('}') => continue,
+                _ => return self.error_result(&format!(", is expected, but got {}", c)),
+            }
+        }
+
+        Ok(JsonValue::Object(object))
     }
 
-    pub fn parse_bool(&mut self) -> ParseResult {
-        todo!()
+    // FIXME function name
+    pub fn parse_bool_and_null(&mut self) -> ParseResult {
+        let keyword = match self.parse_ident() {
+            Err(e) => return Err(e),
+            Ok(k) => k,
+        };
+
+        match keyword.as_str() {
+            "true" => Ok(JsonValue::Bool(true)),
+            "false" => Ok(JsonValue::Bool(false)),
+            "null" => Ok(JsonValue::Null),
+            s => Err(self.make_error(&format!("unexpected. {}", s))),
+        }
     }
 
-    pub fn parse_null(&mut self) -> ParseResult {
-        todo!()
+    fn parse_ident(&mut self) -> Result<String, ParseError> {
+        let mut output = String::new();
+        loop {
+            let c = match self.chars.next() {
+                None => break,
+                Some(c) => c,
+            };
+
+            if c.is_ascii() {
+                output.push(c);
+            } else {
+                break;
+            }
+
+            if let Some(c) = self.chars.peek() {
+                if c.is_ascii() {
+                    continue;
+                }
+            }
+            break;
+        }
+
+        Ok(output)
     }
 
     fn peek(&mut self) -> Option<char> {
