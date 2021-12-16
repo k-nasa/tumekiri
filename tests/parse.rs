@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+use std::iter::FromIterator;
 use tumekiri::{JsonParser, JsonValue};
 
 #[test]
@@ -77,18 +79,36 @@ fn parse_object_test() {
   "squadName": "Super hero squad",
   "homeTown": "Metro City",
   "formed": 2016,
-  "secretBase": "Super tower"
+  "secretBase": "Super tower",
   }
         "#;
 
     let parse_result = JsonParser::new(input.chars()).parse();
 
-    assert!(parse_result.is_ok());
+    let value = parse_result.unwrap();
 
-    let _value = parse_result.unwrap();
+    let s = HashMap::<_, _>::from_iter(
+        [
+            (
+                "squadName".to_owned(),
+                JsonValue::String("Super hero squad".to_string()),
+            ),
+            (
+                "homeTown".to_owned(),
+                JsonValue::String("Metro City".to_string()),
+            ),
+            ("formed".to_owned(), JsonValue::Number(2016.0)),
+            (
+                "secretBase".to_owned(),
+                JsonValue::String("Super tower".to_string()),
+            ),
+        ]
+        .iter()
+        .cloned(),
+    );
 
     // FIXME テスト書くのすごくめんどくさい。。。。プギャーーー
-    // assert_eq!(value, JsonValue::Object());
+    assert_eq!(value, JsonValue::Object(s));
 }
 
 #[test]
