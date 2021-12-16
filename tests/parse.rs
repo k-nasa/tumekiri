@@ -87,7 +87,7 @@ fn parse_object_test() {
 
     let value = parse_result.unwrap();
 
-    let s = HashMap::<_, _>::from_iter(
+    let h = HashMap::from_iter(
         [
             (
                 "squadName".to_owned(),
@@ -107,8 +107,7 @@ fn parse_object_test() {
         .cloned(),
     );
 
-    // FIXME テスト書くのすごくめんどくさい。。。。プギャーーー
-    assert_eq!(value, JsonValue::Object(s));
+    assert_eq!(value, JsonValue::Object(h));
 }
 
 #[test]
